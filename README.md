@@ -1,7 +1,7 @@
 # NetScope
 
-[![CI](https://github.com/youruser/netscope/actions/workflows/ci.yml/badge.svg)](https://github.com/youruser/netscope/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/youruser/netscope/branch/main/graph/badge.svg)](https://codecov.io/gh/youruser/netscope)
+[![CI](https://github.com/vvhungy/netscope/actions/workflows/ci.yml/badge.svg)](https://github.com/vvhungy/netscope/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/vvhungy/netscope/branch/main/graph/badge.svg)](https://codecov.io/gh/vvhungy/netscope)
 [![PyPI version](https://img.shields.io/pypi/v/netscope)](https://pypi.org/project/netscope/)
 
 A real-time Linux network bandwidth monitor with a PyQt6 GUI.
@@ -36,7 +36,7 @@ pip install netscope
 Or from source:
 
 ```bash
-git clone https://github.com/youruser/netscope.git
+git clone https://github.com/vvhungy/netscope.git
 cd netscope
 pip install .
 ```

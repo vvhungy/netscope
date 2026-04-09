@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.vvhungy.netscope</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+
+  <name>NetScope</name>
+  <summary>Real-time Linux network bandwidth monitor</summary>
+
+  <description>
+    <p>
+      NetScope is a real-time network bandwidth monitor for Linux with a PyQt6 GUI.
+      It shows per-process upload and download rates, active TCP/UDP connections,
+      remote destinations with GeoIP country identification, and historical bandwidth graphs.
+    </p>
+    <p>Features include:</p>
+    <ul>
+      <li>Per-process bandwidth — live upload/download rates</li>
+      <li>Connection tracking — TCP/UDP with remote service identification</li>
+      <li>GeoIP — country flags next to remote hosts</li>
+      <li>Historical graphs — bandwidth over time stored in SQLite</li>
+      <li>Data cap tracking — monthly cap with warnings and projection</li>
+      <li>Custom alert rules — user-defined thresholds with desktop notifications</li>
+      <li>Traffic blocking — block a process via iptables with one click</li>
+      <li>Speed test — integrated network speed test</li>
+      <li>Dark / light / system theme</li>
+      <li>System tray with live bandwidth rates</li>
+      <li>CSV / JSON export</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">netscope.desktop</launchable>
+
+  <url type="homepage">https://github.com/vvhungy/netscope</url>
+  <url type="bugtracker">https://github.com/vvhungy/netscope/issues</url>
+
+  <provides>
+    <binary>netscope</binary>
+  </provides>
+
+  <releases>
+    <release version="0.1.0" date="2026-04-09">
+      <description>
+        <p>Initial release.</p>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1"/>
+
+  <requires>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </requires>
+
+  <recommends>
+    <display_length compare="ge">800</display_length>
+  </recommends>
+</component>

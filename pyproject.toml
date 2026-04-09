@@ -40,6 +40,11 @@ netscope = "netscope.main:main"
 where = ["."]
 include = ["netscope*"]
 
+[tool.setuptools.data-files]
+"share/applications" = ["netscope.desktop"]
+"share/metainfo" = ["netscope.metainfo.xml"]
+"share/icons/hicolor/scalable/apps" = ["netscope/resources/icons/app-icon.svg"]
+
 [tool.mypy]
 files = ["netscope"]
 python_version = "3.11"

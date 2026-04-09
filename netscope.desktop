@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NetScope
+GenericName=Network Monitor
+Comment=Real-time Linux network bandwidth monitor
+Exec=pkexec netscope
+Icon=netscope
+Terminal=false
+Categories=Network;Monitor;System;
+Keywords=network;bandwidth;monitor;traffic;iptables;
+StartupWMClass=NetScope
