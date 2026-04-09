@@ -3,13 +3,12 @@
 import os
 import socket
 import struct
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from collections import defaultdict
 
-from .services import identify_service
 from .protocols import classify_protocol
-
+from .services import identify_service
 
 # Private IP ranges for LAN detection
 _PRIVATE_RANGES = [

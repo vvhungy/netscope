@@ -1,17 +1,14 @@
 """Pytest configuration and fixtures."""
 
+
 import pytest
-import tempfile
-import json
-from pathlib import Path
-from unittest.mock import patch
 
 
 @pytest.fixture(scope="session")
 def qapp():
     """Provide a QApplication instance for widget tests."""
-    import sys
     import os
+    import sys
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt6.QtWidgets import QApplication
     app = QApplication.instance() or QApplication(sys.argv)

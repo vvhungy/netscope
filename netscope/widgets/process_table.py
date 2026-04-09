@@ -1,10 +1,17 @@
 """Process connections table widget."""
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QHeaderView,
+    QLabel,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ..core.connections import Connection
-from ..core.theme import get_color, get_palette, table_style
+from ..core.theme import get_palette, table_style
 
 
 class ProcessTable(QWidget):

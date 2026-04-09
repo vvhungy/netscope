@@ -11,7 +11,6 @@ from enum import Enum
 from typing import Optional
 
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QApplication
 
 
 class ThemeMode(Enum):
@@ -188,7 +187,8 @@ class Theme:
         4. GTK_THEME environment variable
         5. Qt styleHints().colorScheme() — fallback for non-Linux or other DEs
         """
-        import subprocess, os
+        import os
+        import subprocess
 
         # When running under sudo, gsettings queries root's dconf database
         # (which has no GNOME settings).  We need to query as the real user.
@@ -290,7 +290,8 @@ class Theme:
         to theme changes.
         """
         try:
-            from PyQt6.QtGui import QPalette, QColor as _QColor
+            from PyQt6.QtGui import QColor as _QColor
+            from PyQt6.QtGui import QPalette
             from PyQt6.QtWidgets import QApplication as _QApp
             app = _QApp.instance()
             if not isinstance(app, _QApp):

@@ -2,10 +2,8 @@
 
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Optional
-from collections import defaultdict
 
 # Database location
 DATA_DIR = Path.home() / ".local" / "share" / "netscope"

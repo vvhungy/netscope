@@ -4,13 +4,13 @@ Allows blocking/unblocking network access for specific processes by PID.
 Uses iptables owner module to match packets by process owner.
 """
 
-import subprocess
+import json
 import os
+import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-import json
-import time
 
 
 @dataclass
@@ -215,7 +215,7 @@ class TrafficBlocker:
         if pid not in self._blocked:
             return False, "Process is not blocked"
 
-        blocked = self._blocked[pid]
+        _blocked = self._blocked[pid]
         uid = self._get_uid_for_pid(pid)
 
         if uid is not None:

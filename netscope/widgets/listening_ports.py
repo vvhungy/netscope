@@ -1,10 +1,17 @@
 """Listening ports table widget."""
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QHeaderView,
+    QLabel,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ..core.connections import ListeningPort
-from ..core.theme import get_color, get_palette, table_style
+from ..core.theme import get_palette, table_style
 
 
 class ListeningPortsWidget(QWidget):
@@ -50,7 +57,6 @@ class ListeningPortsWidget(QWidget):
     def update_data(self, listening_ports: list[ListeningPort]) -> None:
         """Update table with new listening port data."""
         self._data = listening_ports
-        p = get_palette()
 
         # Sort by port by default
         sorted_ports = sorted(listening_ports, key=lambda p: (p.port, p.protocol))

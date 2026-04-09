@@ -1,13 +1,13 @@
 """Historical bandwidth graph widget showing data from SQLite database."""
 
-from datetime import datetime, timedelta
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QLinearGradient
 
-from ..core.history import HistoryManager, HourlyStats, DailyTotal
-from ..core.theme import get_color, get_palette, button_style
-from ..core.utils import format_bytes, format_rate
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QFont, QPainter, QPen
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+
+from ..core.history import DailyTotal, HistoryManager
+from ..core.theme import button_style, get_color, get_palette
+from ..core.utils import format_bytes
 
 
 class HistoricalGraph(QWidget):

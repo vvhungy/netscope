@@ -7,16 +7,16 @@ Provides bandwidth testing using either:
 The speed test measures actual network throughput to various servers.
 """
 
+import json
 import os
+import socket
 import subprocess
 import time
-import urllib.request
 import urllib.error
-import json
-import socket
+import urllib.request
 from dataclasses import dataclass
-from typing import Optional, Callable
 from threading import Event
+from typing import Callable, Optional
 
 
 @dataclass

@@ -1,10 +1,9 @@
 """Remote destinations summary panel."""
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from ..core.geoip import GeoIPLookup, get_geoip, country_flag
-from ..core.theme import get_color, get_palette, panel_style
+from ..core.geoip import GeoIPLookup, country_flag, get_geoip
+from ..core.theme import get_palette
 
 
 class DestinationsPanel(QWidget):

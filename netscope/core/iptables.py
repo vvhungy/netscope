@@ -1,11 +1,10 @@
 """IPTables chain management for bandwidth counting."""
 
-import subprocess
 import logging
-from typing import Optional
+import subprocess
 
 from ..config import IPTABLES_CHAIN, RULE_TAGS
-from .errors import IPTablesError, safe_call
+from .errors import IPTablesError
 
 logger = logging.getLogger("netscope.iptables")
 

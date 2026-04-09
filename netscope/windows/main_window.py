@@ -2,28 +2,38 @@
 
 import subprocess
 from pathlib import Path
-from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QMessageBox, QSplitter, QStatusBar, QMenuBar,
-    QFileDialog, QMenu
-)
-from PyQt6.QtCore import Qt, QTimer
 
-from ..core.iptables import IPTablesManager, IPTablesError
-from ..core.bandwidth import BandwidthStats
-from ..core.connections import Connection
-from ..core.process_bandwidth import ProcessBandwidthTracker
-from ..core.data_cap import DataCapTracker, DataCapStatus
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
+)
+
+from ..config import load_config
 from ..core.alert_rules import get_alert_manager
+from ..core.bandwidth import BandwidthStats
+from ..core.data_cap import DataCapTracker
+from ..core.iptables import IPTablesError, IPTablesManager
+from ..core.process_bandwidth import ProcessBandwidthTracker
 from ..core.traffic_blocker import TrafficBlocker
-from ..workers import BandwidthWorker, ConnectionWorker
+from ..core.utils import format_rate
 from ..widgets import (
-    BandwidthPanel, BandwidthGraph, ProcessTable, DestinationsPanel, 
-    ProcessBandwidthTable, HistoricalGraph
+    BandwidthGraph,
+    BandwidthPanel,
+    DestinationsPanel,
+    HistoricalGraph,
+    ProcessBandwidthTable,
+    ProcessTable,
 )
 from ..widgets.tray_icon import TrayIcon
-from ..config import load_config
-from ..core.utils import format_rate
+from ..workers import BandwidthWorker, ConnectionWorker
 
 
 def get_primary_interface() -> str:
@@ -257,7 +267,7 @@ class MainWindow(QMainWindow):
         if data_cap_status.enabled and data_cap_status.monthly_cap_gb > 0:
             data_cap_percent = data_cap_status.percent_used
 
-        triggered = self._alert_manager.check_rate_alerts(
+        self._alert_manager.check_rate_alerts(
             rx_rate=stats.total_rx_rate,
             tx_rate=stats.total_tx_rate,
             data_cap_percent=data_cap_percent
@@ -270,7 +280,6 @@ class MainWindow(QMainWindow):
         )
 
         # Update status bar with total rate
-        total = stats.total_rx_rate + stats.total_tx_rate
         rx_str = format_rate(stats.total_rx_rate)
         tx_str = format_rate(stats.total_tx_rate)
         self.statusBar().showMessage(
@@ -456,15 +465,19 @@ class MainWindow(QMainWindow):
 
     def _on_export_bandwidth(self) -> None:
         """Export bandwidth history data."""
-        from ..core.export import (
-            generate_export_filename,
-            export_bandwidth_json, export_bandwidth_csv,
-            export_hourly_stats_json, export_hourly_stats_csv,
-            export_daily_totals_json, export_daily_totals_csv
-        )
         import typing
         from typing import Union
-        from ..core.history import BandwidthSample, HourlyStats, DailyTotal, HistoryManager
+
+        from ..core.export import (
+            export_bandwidth_csv,
+            export_bandwidth_json,
+            export_daily_totals_csv,
+            export_daily_totals_json,
+            export_hourly_stats_csv,
+            export_hourly_stats_json,
+            generate_export_filename,
+        )
+        from ..core.history import BandwidthSample, DailyTotal, HistoryManager, HourlyStats
 
         # Ask for format
         menu = QMenu(self)
@@ -483,7 +496,7 @@ class MainWindow(QMainWindow):
         history = HistoryManager()
         data: Union[list[BandwidthSample], list[HourlyStats], list[DailyTotal]] = []
         data_type: str = ""
-        
+
         if action == samples_action:
             data = history.get_recent_samples(hours=24)
             data_type = "samples"
@@ -498,14 +511,14 @@ class MainWindow(QMainWindow):
             data_type = "samples"
         else:
             return
-        
+
         if not data:
             QMessageBox.information(self, "Export", "No data available to export.")
             return
-        
+
         # Determine format
         is_csv = action == csv_action or action in [samples_action, hourly_action, daily_action]
-        
+
         # Get save path
         ext = "csv" if is_csv else "json"
         default_name = generate_export_filename(f"netscope_{data_type}", ext)
@@ -515,12 +528,12 @@ class MainWindow(QMainWindow):
             default_name,
             f"{ext.upper()} Files (*.{ext})"
         )
-        
+
         if not filepath:
             return
-        
+
         filepath_path: Path = Path(filepath)
-        
+
         try:
             if data_type == "samples":
                 samples = typing.cast(list[BandwidthSample], data)
@@ -547,11 +560,12 @@ class MainWindow(QMainWindow):
 
     def _on_export_connections(self) -> None:
         """Export current connections."""
-        from ..core.export import (
-            generate_export_filename,
-            export_connections_json, export_connections_csv
-        )
         from ..core.connections import ConnectionTracker
+        from ..core.export import (
+            export_connections_csv,
+            export_connections_json,
+            generate_export_filename,
+        )
 
         if not self.conn_worker:
             return
@@ -567,7 +581,7 @@ class MainWindow(QMainWindow):
         # Ask for format
         menu = QMenu(self)
         csv_action = menu.addAction("CSV Format")
-        json_action = menu.addAction("JSON Format")
+        menu.addAction("JSON Format")
 
         action = menu.exec(self.cursor().pos())
         if not action:

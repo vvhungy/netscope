@@ -1,10 +1,16 @@
 """Speed test dialog for measuring network throughput."""
 
+from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QProgressBar, QGroupBox, QMessageBox, QComboBox, QFrame
+    QComboBox,
+    QDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QPushButton,
+    QVBoxLayout,
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
 from ..core.speed_test import SpeedTest, SpeedTestResult
 

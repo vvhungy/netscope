@@ -1,11 +1,11 @@
 """Unit tests for data cap tracking module."""
 
-import pytest
 import json
 from datetime import datetime
-from unittest.mock import patch
 
-from netscope.core.data_cap import DataCapTracker, DataCapStatus
+import pytest
+
+from netscope.core.data_cap import DataCapStatus, DataCapTracker
 
 
 class TestDataCapStatus:

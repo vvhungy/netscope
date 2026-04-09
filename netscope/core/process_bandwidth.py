@@ -11,14 +11,14 @@ For best results, run with appropriate permissions to read /proc/PID/fd.
 
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 import time
-import logging
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from collections import defaultdict
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 logger = logging.getLogger("netscope.process_bandwidth")
 
@@ -219,7 +219,7 @@ class ProcessBandwidthTracker:
             dt = current_time - self._prev_time
             if dt > 0:
                 for inode, stats in socket_stats.items():
-                    prev: SocketStats = self._prev_socket_stats.get(inode, {})
+                    prev: SocketStats = self._prev_socket_stats.get(inode, {})  # noqa: F841
 
                     # Calculate queue delta (bytes transferred)
                     # Note: Recv-Q is data received but not yet read by process
@@ -240,8 +240,8 @@ class ProcessBandwidthTracker:
 
         # Calculate rates from deltas
         results: list[ProcessBandwidthStats] = []
-        total_process_rx = sum(d["rx"] for d in process_deltas.values())
-        total_process_tx = sum(d["tx"] for d in process_deltas.values())
+        _total_process_rx = sum(d["rx"] for d in process_deltas.values())
+        _total_process_tx = sum(d["tx"] for d in process_deltas.values())
 
         # Get all PIDs with connections
         pids_with_conns = set()

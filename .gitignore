@@ -39,6 +39,9 @@ design.md
 gui_display.md
 tasks.md
 
+# Leftover editor/tool artifacts
+*.new
+
 # IDE
 .idea/
 .vscode/

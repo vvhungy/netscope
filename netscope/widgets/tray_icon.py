@@ -1,11 +1,10 @@
 """System tray icon with live bandwidth graph."""
 
 from collections import deque
-from pathlib import Path
-from PyQt6.QtWidgets import QSystemTrayIcon, QMenu, QApplication, QMainWindow
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QPen, QFont, QBrush
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QSize
-from PyQt6.QtWidgets import QMessageBox
+
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QSystemTrayIcon
 
 from ..core.theme import get_color, get_palette
 

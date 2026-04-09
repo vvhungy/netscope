@@ -1,19 +1,35 @@
 """Settings dialog for NetScope configuration."""
 
 import uuid
-from typing import Optional
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTabWidget, QWidget,
-    QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox,
-    QPushButton, QComboBox, QGroupBox, QFormLayout, QDialogButtonBox,
-    QMessageBox, QFrame, QListWidget, QListWidgetItem, QSplitter
-)
-from PyQt6.QtCore import Qt, pyqtSignal
 
-from ..config import load_config, save_config, DEFAULT_CONFIG, CONFIG_FILE
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QDoubleSpinBox,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QSpinBox,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
+from ..config import CONFIG_FILE, load_config, save_config
 from ..core.alert_rules import (
-    AlertRulesManager, AlertRule, AlertType, AlertDirection,
-    get_alert_manager
+    AlertDirection,
+    AlertRule,
+    AlertType,
+    get_alert_manager,
 )
 
 

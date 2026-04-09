@@ -1,7 +1,8 @@
 """Tests for theme switching — verifies all widgets refresh correctly across modes."""
 
 import pytest
-from netscope.core.theme import Theme, ThemeMode, DARK_PALETTE, LIGHT_PALETTE
+
+from netscope.core.theme import DARK_PALETTE, LIGHT_PALETTE, Theme, ThemeMode
 
 
 class TestNewPaletteTokens:
@@ -42,12 +43,12 @@ class TestWidgetThemeSwitch:
         Theme.set_mode(ThemeMode.SYSTEM)
 
     def _make_widgets(self):
-        from netscope.widgets.bandwidth_panel import BandwidthPanel
         from netscope.widgets.bandwidth_graph import BandwidthGraph
-        from netscope.widgets.historical_graph import HistoricalGraph
-        from netscope.widgets.process_table import ProcessTable
+        from netscope.widgets.bandwidth_panel import BandwidthPanel
         from netscope.widgets.destinations_panel import DestinationsPanel
+        from netscope.widgets.historical_graph import HistoricalGraph
         from netscope.widgets.process_bandwidth_table import ProcessBandwidthTable
+        from netscope.widgets.process_table import ProcessTable
 
         return [
             BandwidthPanel(),
@@ -85,6 +86,7 @@ class TestWidgetThemeSwitch:
     def test_bandwidth_graph_paint_after_theme_switch(self, qapp):
         """BandwidthGraph paintEvent must not raise after theme switch."""
         from PyQt6.QtGui import QPainter, QPixmap
+
         from netscope.widgets.bandwidth_graph import BandwidthGraph
 
         graph = BandwidthGraph()
@@ -102,6 +104,7 @@ class TestWidgetThemeSwitch:
     def test_historical_graph_paint_after_theme_switch(self, qapp):
         """HistoricalGraph paintEvent must not raise after theme switch."""
         from PyQt6.QtGui import QPainter, QPixmap
+
         from netscope.widgets.historical_graph import HistoricalGraph
 
         graph = HistoricalGraph()

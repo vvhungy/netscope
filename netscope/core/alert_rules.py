@@ -1,11 +1,11 @@
 """Custom alert rules for bandwidth thresholds."""
 
+import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Callable, Optional
 from pathlib import Path
-import json
+from typing import Callable, Optional
 
 from .notifications import get_notification_manager
 

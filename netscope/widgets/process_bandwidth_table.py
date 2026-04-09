@@ -1,11 +1,17 @@
 """Process bandwidth table widget showing per-process bandwidth usage."""
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
-    QHeaderView, QAbstractItemView, QMenu
-)
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QAction
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import (
+    QAbstractItemView,
+    QHeaderView,
+    QLabel,
+    QMenu,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ..core.process_bandwidth import ProcessBandwidthStats
 from ..core.theme import get_color, get_palette, table_style

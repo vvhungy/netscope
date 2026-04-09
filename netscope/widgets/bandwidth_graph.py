@@ -1,7 +1,8 @@
 from collections import deque
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QLinearGradient
+
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush, QColor, QFont, QLinearGradient, QPainter, QPen
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from ..core.theme import get_color, get_palette
 from ..core.utils import format_rate
@@ -167,8 +168,8 @@ class BandwidthGraph(QWidget):
         points.append((rect.right(), rect.bottom()))  # End at bottom-right
 
         # Draw fill
-        from PyQt6.QtGui import QPolygon
         from PyQt6.QtCore import QPoint
+        from PyQt6.QtGui import QPolygon
         polygon = QPolygon([QPoint(int(x), int(y)) for x, y in points])
         painter.setBrush(QBrush(gradient))
         painter.setPen(Qt.PenStyle.NoPen)

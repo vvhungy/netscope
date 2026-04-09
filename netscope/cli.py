@@ -2,16 +2,15 @@
 """NetScope CLI — Terminal-based network monitoring."""
 
 import argparse
+import shutil
+import signal
 import subprocess
 import sys
 import time
-import shutil
-import signal
-from pathlib import Path
 
-from .core.iptables import IPTablesManager, IPTablesError
-from .core.bandwidth import BandwidthCalculator, BandwidthStats
-from .core.connections import ConnectionTracker, Connection
+from .core.bandwidth import BandwidthCalculator
+from .core.connections import ConnectionTracker
+from .core.iptables import IPTablesError, IPTablesManager
 
 
 def get_primary_interface() -> str:
@@ -217,11 +216,11 @@ def cmd_snapshot(args) -> int:
 
     for name, conns in sorted_procs:
         i = sum(1 for c in conns if not c.is_private)
-        l = sum(1 for c in conns if c.is_private)
-        if i + l == 0:
+        loc = sum(1 for c in conns if c.is_private)
+        if i + loc == 0:
             continue
         i_str = str(i) if i else "-"
-        l_str = str(l) if l else "-"
+        l_str = str(loc) if loc else "-"
         print(f"  {name:<28} {i_str:>10}  {l_str:>6}")
 
     # Remote services
@@ -284,11 +283,11 @@ def cmd_snapshot(args) -> int:
 
                 for name, conns in sorted_procs:
                     i = sum(1 for c in conns if not c.is_private)
-                    l = sum(1 for c in conns if c.is_private)
-                    if i + l == 0:
+                    loc = sum(1 for c in conns if c.is_private)
+                    if i + loc == 0:
                         continue
                     i_str = str(i) if i else "-"
-                    l_str = str(l) if l else "-"
+                    l_str = str(loc) if loc else "-"
                     print(f"  {name:<28} {i_str:>10}  {l_str:>6}")
 
                 if service_ips:

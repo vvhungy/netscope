@@ -1,10 +1,11 @@
 """Background worker for bandwidth monitoring."""
 
 import time
+
 from PyQt6.QtCore import QThread, pyqtSignal
 
+from ..core.bandwidth import BandwidthCalculator
 from ..core.iptables import IPTablesManager
-from ..core.bandwidth import BandwidthCalculator, BandwidthStats
 
 
 class BandwidthWorker(QThread):

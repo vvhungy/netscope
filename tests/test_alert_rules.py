@@ -1,12 +1,13 @@
 """Unit tests for alert rules module."""
 
-import pytest
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
+
 
 from netscope.core.alert_rules import (
-    AlertRule, AlertRulesManager, AlertType, AlertDirection,
-    get_alert_manager
+    AlertDirection,
+    AlertRule,
+    AlertRulesManager,
+    AlertType,
+    get_alert_manager,
 )
 
 

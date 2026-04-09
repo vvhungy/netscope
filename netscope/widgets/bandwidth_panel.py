@@ -1,11 +1,8 @@
 """Bandwidth display panel with progress bars."""
 
-from typing import Union
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QProgressBar, QFrame
-)
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 
 from ..core.bandwidth import BandwidthStats
 from ..core.data_cap import DataCapStatus

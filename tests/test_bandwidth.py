@@ -1,9 +1,8 @@
 """Unit tests for bandwidth calculation module."""
 
-import pytest
-import time
 
-from netscope.core.bandwidth import BandwidthStats, BandwidthCalculator
+
+from netscope.core.bandwidth import BandwidthCalculator, BandwidthStats
 
 
 class TestBandwidthStats:

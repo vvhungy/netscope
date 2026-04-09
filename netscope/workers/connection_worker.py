@@ -1,9 +1,10 @@
 """Background worker for connection tracking."""
 
 import time
+
 from PyQt6.QtCore import QThread, pyqtSignal
 
-from ..core.connections import ConnectionTracker, Connection
+from ..core.connections import ConnectionTracker
 
 
 class ConnectionWorker(QThread):

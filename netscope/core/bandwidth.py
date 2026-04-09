@@ -1,7 +1,7 @@
 """Bandwidth rate calculation and statistics."""
 
-from dataclasses import dataclass
 import time
+from dataclasses import dataclass
 
 
 @dataclass

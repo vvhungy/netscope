@@ -1,7 +1,7 @@
 """Application configuration and constants."""
 
-from pathlib import Path
 import json
+from pathlib import Path
 
 # Default configuration
 DEFAULT_CONFIG = {

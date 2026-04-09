@@ -1,7 +1,7 @@
 """GeoIP country lookup for IP addresses."""
 
-import struct
 import socket
+import struct
 from pathlib import Path
 
 # Try to import geoip2 for MaxMind database support

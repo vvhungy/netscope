@@ -1,9 +1,9 @@
 """Centralized error handling and logging for NetScope."""
 
-import logging
 import functools
-from typing import Callable, TypeVar, ParamSpec
+import logging
 from enum import Enum
+from typing import Callable, ParamSpec, TypeVar
 
 P = ParamSpec("P")
 T = TypeVar("T")

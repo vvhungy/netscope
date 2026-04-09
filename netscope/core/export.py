@@ -4,10 +4,9 @@ import csv
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
-from .history import HistoryManager, BandwidthSample, HourlyStats, DailyTotal
 from .connections import Connection, ListeningPort
+from .history import BandwidthSample, DailyTotal, HourlyStats
 
 
 def export_bandwidth_csv(samples: list[BandwidthSample], filepath: Path) -> None:

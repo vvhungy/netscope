@@ -1,12 +1,8 @@
 """Unit tests for configuration module."""
 
-import pytest
 import json
 
-from netscope.config import (
-    load_config, save_config, DEFAULT_CONFIG,
-    CONFIG_FILE, CONFIG_DIR
-)
+from netscope.config import DEFAULT_CONFIG, load_config, save_config
 
 
 class TestLoadConfig:

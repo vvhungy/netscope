@@ -1,7 +1,7 @@
 """Desktop notifications for NetScope."""
 
-import subprocess
 import shutil
+import subprocess
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -108,7 +108,7 @@ class NotificationManager:
 
         if percent >= 100:
             title = "Data Cap Exceeded!"
-            message = f"You have exceeded your monthly data cap."
+            message = "You have exceeded your monthly data cap."
         else:
             title = f"Data Cap Warning: {percent:.0f}%"
             message = f"{remaining_gb:.1f} GB remaining this month."

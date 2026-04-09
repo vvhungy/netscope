@@ -1,15 +1,12 @@
 """Integration tests for NetScope workflows."""
 
-import pytest
-import json
-import time
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 from datetime import datetime
 
-from netscope.core.bandwidth import BandwidthCalculator, BandwidthStats
-from netscope.core.data_cap import DataCapTracker, DataCapStatus
-from netscope.core.alert_rules import AlertRulesManager, AlertRule, AlertType, AlertDirection
+import pytest
+
+from netscope.core.alert_rules import AlertDirection, AlertRule, AlertRulesManager, AlertType
+from netscope.core.bandwidth import BandwidthCalculator
+from netscope.core.data_cap import DataCapTracker
 
 
 class TestBandwidthMonitoringWorkflow:
@@ -91,7 +88,7 @@ class TestDataCapPersistenceWorkflow:
 
     def test_data_cap_persists_across_sessions(self, mock_usage_file):
         """Test that usage persists across tracker instances."""
-        current_month = datetime.now().strftime("%Y-%m")
+        _current_month = datetime.now().strftime("%Y-%m")
 
         # Session 1: Use some data
         tracker1 = DataCapTracker(monthly_cap_gb=100.0, enabled=True)
@@ -231,7 +228,7 @@ class TestEndToEndWorkflow:
         # Simulate high bandwidth usage
         current_time = 0.0
         inet_rx_total = 0
-        inet_tx_total = 0
+        _inet_tx_total = 0
 
         # Simulate 5 seconds of 1 GB/s download (will hit 50% of 10GB cap)
         for i in range(6):

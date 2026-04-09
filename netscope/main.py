@@ -1,14 +1,13 @@
 """Application entry point."""
 
-import sys
 import os
+import sys
 
 from PyQt6.QtWidgets import QApplication, QMessageBox
-from PyQt6.QtCore import Qt
 
-from .windows import MainWindow
-from .widgets.tray_icon import TrayIcon
 from .config import load_config
+from .widgets.tray_icon import TrayIcon
+from .windows import MainWindow
 
 # Try to load app icon from resources
 try:

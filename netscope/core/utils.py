@@ -1,6 +1,5 @@
 """Utility functions for NetScope."""
 
-from typing import Union
 
 
 def format_bytes(b: float) -> str:

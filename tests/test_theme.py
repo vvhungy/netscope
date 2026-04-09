@@ -1,11 +1,16 @@
 """Unit tests for theme module."""
 
-import pytest
-from unittest.mock import patch, MagicMock
+
 
 from netscope.core.theme import (
-    Theme, ThemeMode, ColorPalette, DARK_PALETTE, LIGHT_PALETTE,
-    get_color, get_palette, get_theme
+    DARK_PALETTE,
+    LIGHT_PALETTE,
+    ColorPalette,
+    Theme,
+    ThemeMode,
+    get_color,
+    get_palette,
+    get_theme,
 )
 
 
@@ -121,7 +126,7 @@ class TestSystemThemeDetection:
 
     def test_detect_with_dark_palette(self):
         """Should detect dark theme from dark window color."""
-        from PyQt6.QtGui import QPalette, QColor
+        from PyQt6.QtGui import QColor
         from PyQt6.QtWidgets import QApplication
 
         app = QApplication.instance()
