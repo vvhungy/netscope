@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Type checker
+.mypy_cache/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Claude Code
+.claude/
+
+# User runtime config and data
+config.json
+*.db
+
+# Development tools
+scripts/
+capture_screenshots.py
+*.png
+
+# Internal planning docs
+design.md
+gui_display.md
+tasks.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#1a1a2e" stroke="#4a9eff" stroke-width="3"/>
+
+  <!-- Globe/Network representation -->
+  <ellipse cx="64" cy="64" rx="40" ry="40" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.6"/>
+  <ellipse cx="64" cy="64" rx="40" ry="20" fill="none" stroke="#4a9eff" stroke-width="1.5" opacity="0.8"/>
+  <ellipse cx="64" cy="64" rx="20" ry="40" fill="none" stroke="#4a9eff" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Horizontal line through center -->
+  <line x1="24" y1="64" x2="104" y2="64" stroke="#4a9eff" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Download arrow (left side, green) -->
+  <path d="M35 45 L35 60 L28 53 L35 60 L42 53" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Upload arrow (right side, blue) -->
+  <path d="M93 83 L93 68 L86 75 L93 68 L100 75" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Activity dots representing network nodes -->
+  <circle cx="50" cy="50" r="4" fill="#4ade80"/>
+  <circle cx="78" cy="50" r="4" fill="#60a5fa"/>
+  <circle cx="50" cy="78" r="4" fill="#f97316"/>
+  <circle cx="78" cy="78" r="4" fill="#a855f7"/>
+
+  <!-- Connection lines between nodes -->
+  <line x1="50" y1="50" x2="78" y2="50" stroke="#4a9eff" stroke-width="1" opacity="0.5"/>
+  <line x1="50" y1="78" x2="78" y2="78" stroke="#4a9eff" stroke-width="1" opacity="0.5"/>
+  <line x1="50" y1="50" x2="50" y2="78" stroke="#4a9eff" stroke-width="1" opacity="0.5"/>
+  <line x1="78" y1="50" x2="78" y2="78" stroke="#4a9eff" stroke-width="1" opacity="0.5"/>
+</svg>
