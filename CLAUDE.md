@@ -36,11 +36,13 @@
 ## Qt / GUI
 - Always qualify stylesheets on container widgets with a type selector (`QMainWindow { ... }`, not bare `property: value;`). Unqualified rules cascade to all descendants and silently override child widget theming.
 - When the app runs under sudo/pkexec, session-bound tools (gsettings, dconf) return plausible defaults from the root context, not errors. Always query as the real user (via SUDO_USER/runuser) — do not rely on failure-based fallbacks.
+- PyQt6/PySide6 CI jobs on bare Ubuntu runners require `libegl1` and `libgl1` system packages (`sudo apt-get install -y libegl1 libgl1`). Qt will fail to import without them even in offscreen mode.
 
 ## Testing
 - Every module gets at least a smoke test. Zero-test modules are not shippable.
 - Claims about test coverage in documentation or metadata must match reality.
 - Headless/offscreen tests do not prove live-app correctness. When they diverge, diff execution paths: style engine, environment, widget hierarchy, parent stylesheets.
+- Before adding a CI workflow for an existing codebase, run every check locally first (lint, type check, build). Discovering failures via remote run cycles wastes time that a 30-second local check would have caught.
 
 ## Type Safety
 - Public functions require type annotations. They document intent and catch mismatches at development time, not runtime.
