@@ -33,6 +33,7 @@ from ..widgets import (
     ProcessBandwidthTable,
     ProcessTable,
 )
+from ..widgets.listening_ports import ListeningPortsWidget
 from ..widgets.tray_icon import TrayIcon
 from ..workers import BandwidthWorker, ConnectionWorker
 
@@ -181,10 +182,14 @@ class MainWindow(QMainWindow):
         # Process connections table
         self.process_table = ProcessTable()
 
-        # Tab widget combining both process views
+        # Listening ports widget
+        self.listening_ports = ListeningPortsWidget()
+
+        # Tab widget combining all process/port views
         self._process_tabs = QTabWidget()
         self._process_tabs.addTab(self.process_bandwidth_table, "Bandwidth")
         self._process_tabs.addTab(self.process_table, "Connections")
+        self._process_tabs.addTab(self.listening_ports, "Listening Ports")
 
         # Destinations panel
         self.destinations_panel = DestinationsPanel()
@@ -238,6 +243,7 @@ class MainWindow(QMainWindow):
             interval=self.config["connection_interval"]
         )
         self.conn_worker.summary_ready.connect(self._on_connection_summary)
+        self.conn_worker.listening_ports_ready.connect(self.listening_ports.update_data)
         self.conn_worker.error_occurred.connect(self._on_worker_error)
 
         # Start workers
@@ -454,6 +460,7 @@ class MainWindow(QMainWindow):
             self.destinations_panel,
             self.process_bandwidth_table,
             self.historical_graph,
+            self.listening_ports,
         ]:
             if widget and hasattr(widget, 'refresh_theme'):
                 widget.refresh_theme()

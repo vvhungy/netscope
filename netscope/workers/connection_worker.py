@@ -12,6 +12,7 @@ class ConnectionWorker(QThread):
 
     connections_ready = pyqtSignal(list)  # list[Connection]
     summary_ready = pyqtSignal(dict, dict)  # process_connections, service_ips
+    listening_ports_ready = pyqtSignal(list)  # list[ListeningPort]
     error_occurred = pyqtSignal(str)
 
     def __init__(self, interval: float = 2.0):
@@ -31,6 +32,9 @@ class ConnectionWorker(QThread):
 
                 proc_conns, service_ips = self.tracker.get_summary()
                 self.summary_ready.emit(proc_conns, service_ips)
+
+                listening = self.tracker.get_listening_ports()
+                self.listening_ports_ready.emit(listening)
             except Exception as e:
                 self.error_occurred.emit(str(e))
 
