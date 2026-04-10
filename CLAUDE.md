@@ -15,6 +15,7 @@
 - **Before implementing any write path, trace all read paths that consume that data.** Writer and reader must agree on key, format, and location — disagreement causes silent misbehaviour with no compiler error.
 - Any value that affects user-visible behaviour should be configurable. Hardcoded intervals, timeouts, and limits are decisions made for the user — justify them or expose the knob.
 - Before writing client code for any external API (D-Bus, REST, IPC), verify exact naming conventions (casing, path format, property names). Assumptions cause silent bugs.
+- Research/options documents are decision aids, not deliverables. Delete them or move them outside the repo once the decision is made — leaving them in the working directory wastes future context.
 
 ## Code
 - Split any file that exceeds ~400 lines. Each module owns one concern — if you need "and" to describe it, split it.
@@ -49,8 +50,24 @@
 - If the language has a type checker, run it before considering work complete.
 
 ## Repository Hygiene
-- Set up `.gitignore` before the first commit. Compiled artifacts, generated schemas, and build outputs should never enter the repo.
 - Do not add external URLs (screenshots, links, references) that do not yet resolve. Use placeholders or omit until the target exists.
+
+## Git Workflow
+- **A task is not done until it is committed.** Required sequence, without exception:
+  1. `ruff check netscope tests && python3 -m mypy netscope && python3 -m pytest tests/` — must pass cleanly
+  2. `git add` relevant files
+  3. `git commit` with a Conventional Commits message (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`)
+  4. Update tasks.md to mark done
+  5. Report to the user
+- **`main` is branch-protected.** Sprint-end push sequence:
+  1. `git checkout -b sprint-N/all-tasks`
+  2. `git push origin sprint-N/all-tasks`
+  3. `git tag sprint-N && git push origin sprint-N`
+  4. Open PR on GitHub targeting `main`
+- After a PR is merged: `git checkout main && git pull`, delete merged branch locally, `git fetch --prune`.
+- For `gh pr create`, use `--body "inline string"` rather than a heredoc — heredoc delimiters are unreliable when the command passes through multiple shell contexts.
+- Never use `git add -f` to bypass `.gitignore`. Remove the entry explicitly and commit the reason.
+- Set up `.gitignore` before the first commit. Build artifacts and generated files must never enter the repo.
 
 ## Sprint Retrospective
 Sprint retrospectives follow three mandatory phases:
