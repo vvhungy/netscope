@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QMenu,
     QMessageBox,
     QSplitter,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -169,25 +170,35 @@ class MainWindow(QMainWindow):
         self.historical_graph = HistoricalGraph()
         splitter.addWidget(self.historical_graph)
 
-        # Process bandwidth table (new widget)
+        # Process bandwidth table
         self.process_bandwidth_table = ProcessBandwidthTable()
-        splitter.addWidget(self.process_bandwidth_table)
 
         # Traffic blocker
         self._traffic_blocker = TrafficBlocker()
         self.process_bandwidth_table.block_requested.connect(self._on_block_process)
         self.process_bandwidth_table.unblock_requested.connect(self._on_unblock_process)
 
-        # Process table
+        # Process connections table
         self.process_table = ProcessTable()
-        splitter.addWidget(self.process_table)
+
+        # Tab widget combining both process views
+        self._process_tabs = QTabWidget()
+        self._process_tabs.addTab(self.process_bandwidth_table, "Bandwidth")
+        self._process_tabs.addTab(self.process_table, "Connections")
 
         # Destinations panel
         self.destinations_panel = DestinationsPanel()
-        splitter.addWidget(self.destinations_panel)
 
-        # Set initial sizes
-        splitter.setSizes([150, 150, 200, 150, 150])
+        # Bottom horizontal splitter: process tabs left, destinations right
+        bottom_splitter = QSplitter(Qt.Orientation.Horizontal)
+        bottom_splitter.addWidget(self._process_tabs)
+        bottom_splitter.addWidget(self.destinations_panel)
+        bottom_splitter.setSizes([600, 300])
+
+        splitter.addWidget(bottom_splitter)
+
+        # Set initial sizes for vertical splitter
+        splitter.setSizes([150, 150, 350])
 
         layout.addWidget(splitter, 1)
 
