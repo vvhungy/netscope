@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -108,6 +108,13 @@ class MainWindow(QMainWindow):
 
         # Track force quit state (vs minimize to tray)
         self._force_quit = False
+
+        # Alert notification buffer: accumulate messages across ticks, flush after 3s quiet
+        self._pending_alert_messages: list[str] = []
+        self._alert_flush_timer = QTimer(self)
+        self._alert_flush_timer.setSingleShot(True)
+        self._alert_flush_timer.setInterval(3000)
+        self._alert_flush_timer.timeout.connect(self._flush_alert_notifications)
 
         self._setup_ui()
         self._setup_menu()
@@ -330,16 +337,33 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Error: {error}")
 
     def _on_alert_triggered(self, rule, message: str) -> None:
-        """Handle alert rule triggered."""
-        # Show in status bar
+        """Handle alert rule triggered — buffer for grouped notification."""
+        # Show immediately in status bar (per-rule, no grouping needed here)
         self.statusBar().showMessage(f"⚠️ {message}", 10000)
 
-        # Show tray notification if available
+        # Accumulate for grouped desktop/tray notification
+        self._pending_alert_messages.append(message)
+
+        # (Re-)start the 3s quiet timer; flushes when no new alerts arrive
+        self._alert_flush_timer.start()
+
+    def _flush_alert_notifications(self) -> None:
+        """Send one grouped notification for all buffered alert messages."""
+        messages = self._pending_alert_messages
+        self._pending_alert_messages = []
+
+        if not messages:
+            return
+
+        # Tray notification (first message as title, rest in body for clarity)
         if self.tray_icon:
-            self.tray_icon.show_notification(
-                f"NetScope Alert: {rule.name}",
-                message
-            )
+            if len(messages) == 1:
+                self.tray_icon.show_notification("NetScope Alert", messages[0])
+            else:
+                self.tray_icon.show_notification(
+                    f"NetScope: {len(messages)} alerts",
+                    "\n".join(f"• {m}" for m in messages)
+                )
 
     def _setup_menu(self) -> None:
         """Setup the menu bar."""

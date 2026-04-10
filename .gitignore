@@ -36,6 +36,7 @@ capture_screenshots.py
 
 # Internal planning docs
 design.md
+design-*.md
 gui_display.md
 tasks.md
 

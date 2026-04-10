@@ -214,17 +214,18 @@ class AlertRulesManager:
                 rule._last_triggered = now
                 triggered.append((rule, message))
 
-                # Send notifications
-                if rule.notify_desktop:
-                    try:
-                        nm = get_notification_manager()
-                        if nm.is_available():
-                            nm.notify("NetScope Alert", message)
-                    except Exception:
-                        pass
-
                 if self._on_alert_callback:
                     self._on_alert_callback(rule, message)
+
+        # Send one grouped desktop notification for all triggered rules
+        desktop_messages = [msg for rule, msg in triggered if rule.notify_desktop]
+        if desktop_messages:
+            try:
+                nm = get_notification_manager()
+                if nm.is_available():
+                    nm.notify_grouped(desktop_messages)
+            except Exception:
+                pass
 
         return triggered
 
@@ -273,21 +274,22 @@ class AlertRulesManager:
                     rule._last_triggered = now
                     triggered.append((rule, message))
 
-                    # Send notifications
-                    if rule.notify_desktop:
-                        try:
-                            nm = get_notification_manager()
-                            if nm.is_available():
-                                nm.notify("NetScope Alert", message)
-                        except Exception:
-                            pass
-
                     if self._on_alert_callback:
                         self._on_alert_callback(rule, message)
 
                 # Reset period
                 rule._period_start = now
                 rule._period_bytes = 0.0
+
+        # Send one grouped desktop notification for all triggered rules
+        desktop_messages = [msg for rule, msg in triggered if rule.notify_desktop]
+        if desktop_messages:
+            try:
+                nm = get_notification_manager()
+                if nm.is_available():
+                    nm.notify_grouped(desktop_messages)
+            except Exception:
+                pass
 
         return triggered
 
