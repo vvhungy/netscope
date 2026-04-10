@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QMenu,
     QMessageBox,
     QSplitter,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -32,6 +33,7 @@ from ..widgets import (
     ProcessBandwidthTable,
     ProcessTable,
 )
+from ..widgets.listening_ports import ListeningPortsWidget
 from ..widgets.tray_icon import TrayIcon
 from ..workers import BandwidthWorker, ConnectionWorker
 
@@ -107,6 +109,13 @@ class MainWindow(QMainWindow):
         # Track force quit state (vs minimize to tray)
         self._force_quit = False
 
+        # Alert notification buffer: accumulate messages across ticks, flush after 3s quiet
+        self._pending_alert_messages: list[str] = []
+        self._alert_flush_timer = QTimer(self)
+        self._alert_flush_timer.setSingleShot(True)
+        self._alert_flush_timer.setInterval(3000)
+        self._alert_flush_timer.timeout.connect(self._flush_alert_notifications)
+
         self._setup_ui()
         self._setup_menu()
         self._setup_workers()
@@ -169,25 +178,39 @@ class MainWindow(QMainWindow):
         self.historical_graph = HistoricalGraph()
         splitter.addWidget(self.historical_graph)
 
-        # Process bandwidth table (new widget)
+        # Process bandwidth table
         self.process_bandwidth_table = ProcessBandwidthTable()
-        splitter.addWidget(self.process_bandwidth_table)
 
         # Traffic blocker
         self._traffic_blocker = TrafficBlocker()
         self.process_bandwidth_table.block_requested.connect(self._on_block_process)
         self.process_bandwidth_table.unblock_requested.connect(self._on_unblock_process)
 
-        # Process table
+        # Process connections table
         self.process_table = ProcessTable()
-        splitter.addWidget(self.process_table)
+
+        # Listening ports widget
+        self.listening_ports = ListeningPortsWidget()
+
+        # Tab widget combining all process/port views
+        self._process_tabs = QTabWidget()
+        self._process_tabs.addTab(self.process_bandwidth_table, "Bandwidth")
+        self._process_tabs.addTab(self.process_table, "Connections")
+        self._process_tabs.addTab(self.listening_ports, "Listening Ports")
 
         # Destinations panel
         self.destinations_panel = DestinationsPanel()
-        splitter.addWidget(self.destinations_panel)
 
-        # Set initial sizes
-        splitter.setSizes([150, 150, 200, 150, 150])
+        # Bottom horizontal splitter: process tabs left, destinations right
+        bottom_splitter = QSplitter(Qt.Orientation.Horizontal)
+        bottom_splitter.addWidget(self._process_tabs)
+        bottom_splitter.addWidget(self.destinations_panel)
+        bottom_splitter.setSizes([600, 300])
+
+        splitter.addWidget(bottom_splitter)
+
+        # Set initial sizes for vertical splitter
+        splitter.setSizes([150, 150, 350])
 
         layout.addWidget(splitter, 1)
 
@@ -227,6 +250,7 @@ class MainWindow(QMainWindow):
             interval=self.config["connection_interval"]
         )
         self.conn_worker.summary_ready.connect(self._on_connection_summary)
+        self.conn_worker.listening_ports_ready.connect(self.listening_ports.update_data)
         self.conn_worker.error_occurred.connect(self._on_worker_error)
 
         # Start workers
@@ -313,16 +337,33 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Error: {error}")
 
     def _on_alert_triggered(self, rule, message: str) -> None:
-        """Handle alert rule triggered."""
-        # Show in status bar
+        """Handle alert rule triggered — buffer for grouped notification."""
+        # Show immediately in status bar (per-rule, no grouping needed here)
         self.statusBar().showMessage(f"⚠️ {message}", 10000)
 
-        # Show tray notification if available
+        # Accumulate for grouped desktop/tray notification
+        self._pending_alert_messages.append(message)
+
+        # (Re-)start the 3s quiet timer; flushes when no new alerts arrive
+        self._alert_flush_timer.start()
+
+    def _flush_alert_notifications(self) -> None:
+        """Send one grouped notification for all buffered alert messages."""
+        messages = self._pending_alert_messages
+        self._pending_alert_messages = []
+
+        if not messages:
+            return
+
+        # Tray notification (first message as title, rest in body for clarity)
         if self.tray_icon:
-            self.tray_icon.show_notification(
-                f"NetScope Alert: {rule.name}",
-                message
-            )
+            if len(messages) == 1:
+                self.tray_icon.show_notification("NetScope Alert", messages[0])
+            else:
+                self.tray_icon.show_notification(
+                    f"NetScope: {len(messages)} alerts",
+                    "\n".join(f"• {m}" for m in messages)
+                )
 
     def _setup_menu(self) -> None:
         """Setup the menu bar."""
@@ -443,6 +484,7 @@ class MainWindow(QMainWindow):
             self.destinations_panel,
             self.process_bandwidth_table,
             self.historical_graph,
+            self.listening_ports,
         ]:
             if widget and hasattr(widget, 'refresh_theme'):
                 widget.refresh_theme()

@@ -58,7 +58,14 @@ class ListeningPortsWidget(QWidget):
         """Update table with new listening port data."""
         self._data = listening_ports
 
-        # Sort by port by default
+        # Save sort state
+        header = self.table.horizontalHeader()
+        sort_col = header.sortIndicatorSection() if header else -1
+        sort_order = header.sortIndicatorOrder() if header else Qt.SortOrder.AscendingOrder
+
+        self.table.setSortingEnabled(False)
+
+        # Default order: port ascending
         sorted_ports = sorted(listening_ports, key=lambda p: (p.port, p.protocol))
 
         self.table.setRowCount(len(sorted_ports))
@@ -103,6 +110,11 @@ class ListeningPortsWidget(QWidget):
             self.table.setItem(row, 2, addr_item)
             self.table.setItem(row, 3, proc_item)
             self.table.setItem(row, 4, pid_item)
+
+        # Restore sort state
+        self.table.setSortingEnabled(True)
+        if sort_col >= 0:
+            self.table.sortByColumn(sort_col, sort_order)
 
     def refresh_theme(self) -> None:
         """Refresh colors for theme change."""

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QAbstractItemView,
     QHeaderView,
     QLabel,
+    QLineEdit,
     QMenu,
     QTableWidget,
     QTableWidgetItem,
@@ -64,6 +65,7 @@ class ProcessBandwidthTable(QWidget):
         self._max_rows = max_rows
         self._data: list[ProcessBandwidthStats] = []
         self._blocked_pids: set[int] = set()
+        self._filter_text: str = ""
         self._setup_ui()
 
     def _setup_ui(self) -> None:
@@ -76,6 +78,13 @@ class ProcessBandwidthTable(QWidget):
         self._title = QLabel("Process Bandwidth")
         self._title.setStyleSheet(f"font-size: 14px; font-weight: bold; color: {p.text_primary};")
         layout.addWidget(self._title)
+
+        # Filter bar
+        self._filter_input = QLineEdit()
+        self._filter_input.setPlaceholderText("Filter by process name...")
+        self._filter_input.setClearButtonEnabled(True)
+        self._filter_input.textChanged.connect(self._on_filter_changed)
+        layout.addWidget(self._filter_input)
 
         # Table
         self.table = QTableWidget()
@@ -168,6 +177,11 @@ class ProcessBandwidthTable(QWidget):
         """
         self._data = process_stats[:self._max_rows]
 
+        # Save sort state
+        header = self.table.horizontalHeader()
+        sort_col = header.sortIndicatorSection() if header else -1
+        sort_order = header.sortIndicatorOrder() if header else Qt.SortOrder.AscendingOrder
+
         # Disable sorting while updating for performance
         self.table.setSortingEnabled(False)
 
@@ -227,8 +241,23 @@ class ProcessBandwidthTable(QWidget):
             self.table.setItem(row, self.COLUMN_TOTAL, total_item)
             self.table.setItem(row, self.COLUMN_CONNECTIONS, conn_item)
 
-        # Re-enable sorting
+        # Restore sort and apply filter
         self.table.setSortingEnabled(True)
+        if sort_col >= 0:
+            self.table.sortByColumn(sort_col, sort_order)
+        self._apply_filter()
+
+    def _on_filter_changed(self, text: str) -> None:
+        """Handle filter input change."""
+        self._filter_text = text.lower()
+        self._apply_filter()
+
+    def _apply_filter(self) -> None:
+        """Show/hide rows based on current filter text."""
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, self.COLUMN_PROCESS)
+            name = item.data(Qt.ItemDataRole.UserRole) if item else ""
+            self.table.setRowHidden(row, bool(self._filter_text and self._filter_text not in name.lower()))
 
     def clear_data(self) -> None:
         """Clear all data from the table."""

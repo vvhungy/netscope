@@ -57,6 +57,13 @@ class ProcessTable(QWidget):
         """Update table with new connection data."""
         self._data = process_connections
 
+        # Save sort state
+        header = self.table.horizontalHeader()
+        sort_col = header.sortIndicatorSection() if header else -1
+        sort_order = header.sortIndicatorOrder() if header else Qt.SortOrder.AscendingOrder
+
+        self.table.setSortingEnabled(False)
+
         # Sort by internet connection count descending
         sorted_procs = sorted(
             process_connections.items(),
@@ -101,6 +108,11 @@ class ProcessTable(QWidget):
             self.table.setItem(row, 1, inet_item)
             self.table.setItem(row, 2, lan_item)
             self.table.setItem(row, 3, services_item)
+
+        # Restore sort state
+        self.table.setSortingEnabled(True)
+        if sort_col >= 0:
+            self.table.sortByColumn(sort_col, sort_order)
 
     def refresh_theme(self) -> None:
         """Refresh colors for theme change."""

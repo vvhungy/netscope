@@ -158,6 +158,30 @@ class NotificationManager:
 
         return self.notify(title, message, urgency="low", icon="network-wired")
 
+    def notify_grouped(self, messages: list[str], urgency: str = "normal") -> bool:
+        """
+        Send a single notification summarising multiple alerts.
+
+        If only one message is provided it is sent as-is. For multiple
+        messages the title shows the count and the body lists each one.
+
+        Args:
+            messages: Non-empty list of alert message strings
+            urgency: "low", "normal", or "critical"
+
+        Returns:
+            True if the notification was sent successfully
+        """
+        if not messages:
+            return False
+
+        if len(messages) == 1:
+            return self.notify("NetScope Alert", messages[0], urgency=urgency, icon="network-error")
+
+        title = f"NetScope: {len(messages)} alerts"
+        body = "\n".join(f"• {m}" for m in messages)
+        return self.notify(title, body, urgency=urgency, icon="network-error")
+
     def notify_startup(self) -> bool:
         """Send startup notification."""
         return self.notify(
