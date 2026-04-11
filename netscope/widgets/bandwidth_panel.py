@@ -152,6 +152,31 @@ class BandwidthPanel(QWidget):
 
         layout.addWidget(inet_frame)
 
+        # VPN section (initially hidden)
+        self.vpn_frame = QFrame()
+        self.vpn_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.vpn_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: {p.bg_secondary};
+                border: 1px solid {p.border};
+                border-radius: 6px;
+            }}
+        """)
+        vpn_layout = QVBoxLayout(self.vpn_frame)
+        vpn_layout.setSpacing(4)
+
+        self._vpn_label = QLabel("VPN")
+        self._vpn_label.setStyleSheet(f"color: {get_color('vpn')}; font-weight: bold;")
+        vpn_layout.addWidget(self._vpn_label)
+
+        self.vpn_rx = SpeedBar("▼ RX", "vpn")
+        self.vpn_tx = SpeedBar("▲ TX", "vpn")
+        vpn_layout.addWidget(self.vpn_rx)
+        vpn_layout.addWidget(self.vpn_tx)
+
+        self.vpn_frame.hide()
+        layout.addWidget(self.vpn_frame)
+
         # Summary row
         summary_layout = QHBoxLayout()
         self.rx_summary = QLabel("RX: —")
@@ -246,6 +271,16 @@ class BandwidthPanel(QWidget):
         self.lan_tx.update_speed(stats.lan_tx_rate, stats.lan_tx_total, self._max_rate)
         self.inet_rx.update_speed(stats.inet_rx_rate, stats.inet_rx_total, self._max_rate)
         self.inet_tx.update_speed(stats.inet_tx_rate, stats.inet_tx_total, self._max_rate)
+
+        # VPN section — show only when interfaces detected
+        if stats.vpn_interfaces:
+            self.vpn_frame.show()
+            ifaces = ", ".join(stats.vpn_interfaces)
+            self._vpn_label.setText(f"VPN ({ifaces})")
+            self.vpn_rx.update_speed(stats.vpn_rx_rate, stats.vpn_rx_total, self._max_rate)
+            self.vpn_tx.update_speed(stats.vpn_tx_rate, stats.vpn_tx_total, self._max_rate)
+        else:
+            self.vpn_frame.hide()
 
         # Update summary
         total_rx = stats.total_rx_rate
@@ -345,6 +380,16 @@ class BandwidthPanel(QWidget):
                 border-radius: 6px;
             }}
         """)
+        self.vpn_frame.setStyleSheet(f"""
+            QFrame {{
+                background-color: {p.bg_secondary};
+                border: 1px solid {p.border};
+                border-radius: 6px;
+            }}
+        """)
+        self._vpn_label.setStyleSheet(f"color: {get_color('vpn')}; font-weight: bold;")
+        self.vpn_rx.refresh_theme()
+        self.vpn_tx.refresh_theme()
 
         # Refresh labels not updated elsewhere
         self.rx_summary.setStyleSheet(f"color: {p.text_primary};")

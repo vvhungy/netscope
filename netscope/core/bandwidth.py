@@ -16,6 +16,13 @@ class BandwidthStats:
     inet_rx_total: int = 0
     inet_tx_total: int = 0
 
+    # VPN interface stats
+    vpn_interfaces: list[str] = ()  # type: ignore[assignment]  # active tun*/wg* names
+    vpn_rx_rate: float = 0.0
+    vpn_tx_rate: float = 0.0
+    vpn_rx_total: int = 0
+    vpn_tx_total: int = 0
+
     @property
     def total_rx_rate(self) -> float:
         return self.lan_rx_rate + self.inet_rx_rate

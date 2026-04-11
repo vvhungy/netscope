@@ -48,6 +48,7 @@ class ColorPalette:
     upload: str           # Upload traffic
     lan: str              # LAN traffic
     internet: str         # Internet traffic
+    vpn: str              # VPN tunnel traffic
 
     # UI colors
     border: str           # Borders
@@ -91,6 +92,7 @@ DARK_PALETTE = ColorPalette(
     upload="#f97316",     # Orange
     lan="#06b6d4",        # Cyan
     internet="#8b5cf6",   # Purple
+    vpn="#a78bfa",        # Violet
 
     # UI
     border="#27272a",
@@ -129,6 +131,7 @@ LIGHT_PALETTE = ColorPalette(
     upload="#ea580c",     # Orange
     lan="#0891b2",        # Cyan
     internet="#7c3aed",   # Purple
+    vpn="#7c3aed",        # Violet
 
     # UI
     border="#d4d4d8",
