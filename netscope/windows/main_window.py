@@ -21,6 +21,7 @@ from ..config import load_config
 from ..core.alert_rules import get_alert_manager
 from ..core.bandwidth import BandwidthStats
 from ..core.data_cap import DataCapTracker
+from ..core.history import HistoryManager
 from ..core.iptables import IPTablesError, IPTablesManager
 from ..core.process_bandwidth import ProcessBandwidthTracker
 from ..core.traffic_blocker import TrafficBlocker
@@ -115,6 +116,18 @@ class MainWindow(QMainWindow):
         self._alert_flush_timer.setSingleShot(True)
         self._alert_flush_timer.setInterval(3000)
         self._alert_flush_timer.timeout.connect(self._flush_alert_notifications)
+
+        # History: write one sample per minute, refresh graph on same cadence
+        self._history_manager = HistoryManager()
+        self._last_stats: BandwidthStats | None = None
+        self._history_write_timer = QTimer(self)
+        self._history_write_timer.setInterval(60_000)
+        self._history_write_timer.timeout.connect(self._write_history_sample)
+        self._history_write_timer.start()
+        self._history_refresh_timer = QTimer(self)
+        self._history_refresh_timer.setInterval(60_000)
+        self._history_refresh_timer.timeout.connect(self._refresh_historical_graph)
+        self._history_refresh_timer.start()
 
         self._setup_ui()
         self._setup_menu()
@@ -259,6 +272,7 @@ class MainWindow(QMainWindow):
 
     def _on_bandwidth_stats(self, stats: BandwidthStats) -> None:
         """Handle bandwidth stats update."""
+        self._last_stats = stats
         self.bandwidth_panel.update_stats(stats)
 
         # Update bandwidth graph with total rates
@@ -335,6 +349,22 @@ class MainWindow(QMainWindow):
     def _on_worker_error(self, error: str) -> None:
         """Handle worker error."""
         self.statusBar().showMessage(f"Error: {error}")
+
+    def _write_history_sample(self) -> None:
+        """Write current bandwidth totals to history DB (called every 60s)."""
+        if self._last_stats is None:
+            return
+        s = self._last_stats
+        self._history_manager.add_sample(
+            lan_rx=int(s.lan_rx_total),
+            lan_tx=int(s.lan_tx_total),
+            inet_rx=int(s.inet_rx_total),
+            inet_tx=int(s.inet_tx_total),
+        )
+
+    def _refresh_historical_graph(self) -> None:
+        """Reload history DB data into the historical graph (called every 60s)."""
+        self.historical_graph.refresh()
 
     def _on_alert_triggered(self, rule, message: str) -> None:
         """Handle alert rule triggered — buffer for grouped notification."""
