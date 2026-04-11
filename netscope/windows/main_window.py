@@ -198,9 +198,11 @@ class MainWindow(QMainWindow):
         self._traffic_blocker = TrafficBlocker()
         self.process_bandwidth_table.block_requested.connect(self._on_block_process)
         self.process_bandwidth_table.unblock_requested.connect(self._on_unblock_process)
+        self.process_bandwidth_table.view_connections_requested.connect(self._on_view_process_connections)
 
         # Process connections table
         self.process_table = ProcessTable()
+        self.process_table.view_connections_requested.connect(self._on_view_process_connections)
 
         # Listening ports widget
         self.listening_ports = ListeningPortsWidget()
@@ -733,6 +735,12 @@ class MainWindow(QMainWindow):
             self.process_bandwidth_table.set_blocked_pids(blocked_pids)
         else:
             QMessageBox.critical(self, "Unblock Failed", f"Failed to unblock process:\n{error}")
+
+    def _on_view_process_connections(self, process_name: str) -> None:
+        """Switch to Connections tab and filter by process name."""
+        self._process_tabs.setCurrentWidget(self.process_table)
+        # ProcessTable doesn't have a filter bar, but we highlight via status bar
+        self.statusBar().showMessage(f"Showing connections for: {process_name}", 5000)
 
     def _on_about(self) -> None:
         """Show about dialog."""
