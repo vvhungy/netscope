@@ -60,8 +60,9 @@
   4. Update tasks.md to mark done
   5. Report to the user
 - **`main` is branch-protected.** Sprint-end push sequence:
+  0. Verify `git status` is clean — commit or stash any changes before branching
   1. `git checkout -b sprint-N/all-tasks`
-  2. `git push origin sprint-N/all-tasks`
+  2. `git push -u origin sprint-N/all-tasks` (`-u` sets upstream tracking, required for `gh pr create`)
   3. `git tag sprint-N && git push origin sprint-N`
   4. Open PR on GitHub targeting `main`
 - After a PR is merged: `git checkout main && git pull`, delete merged branch locally, `git fetch --prune`.
