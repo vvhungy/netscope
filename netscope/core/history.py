@@ -118,14 +118,13 @@ class HistoryManager:
     def get_recent_samples(self, hours: int = 1) -> list[BandwidthSample]:
         """Get recent bandwidth samples."""
         conn = self._get_conn()
-        cutoff = datetime.now() - timedelta(hours=hours)
 
         rows = conn.execute("""
             SELECT timestamp, lan_rx, lan_tx, inet_rx, inet_tx
             FROM bandwidth_samples
-            WHERE timestamp >= ?
+            WHERE timestamp >= datetime('now', ? || ' hours')
             ORDER BY timestamp ASC
-        """, (cutoff.isoformat(),)).fetchall()
+        """, (str(-hours),)).fetchall()
 
         return [
             BandwidthSample(
@@ -141,14 +140,13 @@ class HistoryManager:
     def get_hourly_stats(self, days: int = 7) -> list[HourlyStats]:
         """Get hourly statistics for the past N days."""
         conn = self._get_conn()
-        cutoff = datetime.now() - timedelta(days=days)
 
         rows = conn.execute("""
             SELECT hour, lan_rx_total, lan_tx_total, inet_rx_total, inet_tx_total, connection_count
             FROM hourly_stats
-            WHERE hour >= ?
+            WHERE hour >= datetime('now', ? || ' days')
             ORDER BY hour ASC
-        """, (cutoff.isoformat(),)).fetchall()
+        """, (str(-days),)).fetchall()
 
         return [
             HourlyStats(
@@ -297,17 +295,13 @@ class HistoryManager:
         conn = self._get_conn()
 
         # Delete old samples (keep 7 days)
-        sample_cutoff = datetime.now() - timedelta(days=7)
         conn.execute(
-            "DELETE FROM bandwidth_samples WHERE timestamp < ?",
-            (sample_cutoff.isoformat(),)
+            "DELETE FROM bandwidth_samples WHERE timestamp < datetime('now', '-7 days')"
         )
 
         # Delete old hourly stats (keep 90 days)
-        hourly_cutoff = datetime.now() - timedelta(days=90)
         conn.execute(
-            "DELETE FROM hourly_stats WHERE hour < ?",
-            (hourly_cutoff.isoformat(),)
+            "DELETE FROM hourly_stats WHERE hour < datetime('now', '-90 days')"
         )
 
         conn.commit()
