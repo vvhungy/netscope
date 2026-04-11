@@ -6,6 +6,7 @@
 - Mark a task done in tasks.md immediately when complete, before moving to the next. Never batch updates.
 - Task tracking must reflect reality. If code and tracker disagree, fix the tracker immediately.
 - **A feature is not done if only the write path exists.** For every setting saved or value stored, verify the read path that acts on it is implemented in the same task.
+- **A data feature is not done if the write path and read path haven't been verified together.** Write-then-read round-trip testing is mandatory for any feature that persists and retrieves data.
 - Decide project name, binary name, app ID, and file naming conventions before writing features. Late renames touch everything.
 - Descriptions, metainfo, and READMEs must reflect current state, not aspirational state. Update in the same commit as the feature.
 
@@ -25,6 +26,7 @@
 - If the language has a type checker, run it before considering work complete.
 - Always read a file before editing it. Never use `sed`, `awk`, or shell redirection to edit source files — use Edit or Write tools only.
 - After modifying shared code, search all usage sites before testing. After deleting an `enum` or `struct`, grep for orphaned `impl` blocks.
+- When comparing timestamps stored by a database (e.g. SQLite `CURRENT_TIMESTAMP`), use the same time reference as the storage engine. SQLite's `CURRENT_TIMESTAMP` is UTC; comparisons must use `datetime('now')` in SQL, not Python's `datetime.now()`.
 
 ## Dependencies
 - Do not add a dependency unless it is used in the current sprint. Speculative/future-use crates are tech debt from day one.
