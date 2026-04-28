@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
             warn_50=self.config.get("data_cap_warn_50", True),
             warn_75=self.config.get("data_cap_warn_75", True),
             warn_90=self.config.get("data_cap_warn_90", True),
+            reset_day=self.config.get("data_cap_reset_day", 1),
         )
 
         # Alert rules manager
@@ -815,5 +816,6 @@ class MainWindow(QMainWindow):
                 monthly_cap_gb=config.get("data_cap_gb", 100.0),
                 warn_50=config.get("data_cap_warn_50", True),
                 warn_75=config.get("data_cap_warn_75", True),
-                warn_90=config.get("data_cap_warn_90", True)
+                warn_90=config.get("data_cap_warn_90", True),
+                reset_day=config.get("data_cap_reset_day", 1),
             )

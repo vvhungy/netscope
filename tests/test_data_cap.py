@@ -1,7 +1,8 @@
 """Unit tests for data cap tracking module."""
 
 import json
-from datetime import datetime
+from datetime import date, datetime
+from unittest.mock import patch
 
 import pytest
 
@@ -234,3 +235,102 @@ class TestDataCapTracker:
         status3 = tracker.get_status()
         warning3 = tracker.get_new_warning(status3)
         assert warning3 is not None
+
+
+class TestDataCapResetDay:
+    """Tests for custom reset day functionality."""
+
+    def test_default_reset_day_is_1(self, mock_usage_file):
+        tracker = DataCapTracker()
+        assert tracker._reset_day == 1
+
+    def test_reset_day_clamped_to_range(self, mock_usage_file):
+        tracker = DataCapTracker(reset_day=0)
+        assert tracker._reset_day == 1
+        tracker2 = DataCapTracker(reset_day=35)
+        assert tracker2._reset_day == 31
+
+    def test_set_reset_day(self, mock_usage_file):
+        tracker = DataCapTracker()
+        tracker.set_reset_day(15)
+        assert tracker._reset_day == 15
+
+    def test_period_key_before_reset_day(self, mock_usage_file):
+        """On the 10th with reset_day=15, period key should be previous month."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 3, 10)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._get_current_month() == "2026-02"
+
+    def test_period_key_on_reset_day(self, mock_usage_file):
+        """On the 15th with reset_day=15, period key should be current month."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 3, 15)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._get_current_month() == "2026-03"
+
+    def test_period_key_after_reset_day(self, mock_usage_file):
+        """On the 20th with reset_day=15, period key should be current month."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 3, 20)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._get_current_month() == "2026-03"
+
+    def test_period_key_january_before_reset(self, mock_usage_file):
+        """Jan 5 with reset_day=15 → period key is previous December."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 1, 5)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._get_current_month() == "2025-12"
+
+    def test_days_remaining_before_reset_day(self, mock_usage_file):
+        """On March 10 with reset_day=15, 5 days remaining."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 3, 10)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._days_remaining_in_month() == 5
+
+    def test_days_remaining_on_reset_day(self, mock_usage_file):
+        """On March 15 with reset_day=15, next reset is April 15."""
+        tracker = DataCapTracker(reset_day=15)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 3, 15)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._days_remaining_in_month() == 31
+
+    def test_days_remaining_clamps_february(self, mock_usage_file):
+        """reset_day=31 in Jan → next reset is Jan 31 (28 days from Jan 3)."""
+        tracker = DataCapTracker(reset_day=31)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 1, 3)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._days_remaining_in_month() == 28
+
+    def test_days_remaining_clamp_skips_to_next_month(self, mock_usage_file):
+        """On Jan 31 with reset_day=31, next reset is Feb 28 (clamped)."""
+        tracker = DataCapTracker(reset_day=31)
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.today.return_value = date(2026, 1, 31)
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            assert tracker._days_remaining_in_month() == 28
+
+    def test_period_changes_at_reset_boundary(self, mock_usage_file):
+        """Period key changes when crossing the reset day."""
+        tracker = DataCapTracker(reset_day=15)
+
+        with patch("netscope.core.data_cap.date") as mock_date:
+            mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
+            mock_date.today.return_value = date(2026, 3, 14)
+            key_before = tracker._get_current_month()
+
+            mock_date.today.return_value = date(2026, 3, 15)
+            key_after = tracker._get_current_month()
+
+        assert key_before != key_after
+        assert key_before == "2026-02"
+        assert key_after == "2026-03"

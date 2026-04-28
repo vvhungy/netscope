@@ -1,5 +1,6 @@
 """Data cap tracking and alerting."""
 
+import calendar
 import json
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -33,12 +34,14 @@ class DataCapTracker:
         warn_50: bool = True,
         warn_75: bool = True,
         warn_90: bool = True,
+        reset_day: int = 1,
     ):
         self.monthly_cap_gb = monthly_cap_gb
         self.enabled = enabled
         self.warn_50 = warn_50
         self.warn_75 = warn_75
         self.warn_90 = warn_90
+        self._reset_day = max(1, min(31, reset_day))
 
         # Usage tracking
         self._current_month: str = self._get_current_month()
@@ -60,17 +63,33 @@ class DataCapTracker:
         self._load()
 
     def _get_current_month(self) -> str:
-        """Get current month string in YYYY-MM format."""
-        return datetime.now().strftime("%Y-%m")
+        """Get billing period key based on reset day.
+
+        If today is on or after the reset day, the period started this calendar
+        month.  Otherwise it started last calendar month (the period that began
+        on the reset day of the previous month).
+        """
+        today = date.today()
+        if today.day >= self._reset_day:
+            return f"{today.year}-{today.month:02d}"
+        else:
+            if today.month == 1:
+                return f"{today.year - 1}-12"
+            return f"{today.year}-{today.month - 1:02d}"
 
     def _days_remaining_in_month(self) -> int:
-        """Calculate days remaining in current month."""
+        """Calculate days until the next reset day."""
         today = date.today()
-        if today.month == 12:
-            next_month = date(today.year + 1, 1, 1)
+        if today.day < self._reset_day:
+            # Reset is later this month
+            clamp = min(self._reset_day, calendar.monthrange(today.year, today.month)[1])
+            next_reset = date(today.year, today.month, clamp)
         else:
-            next_month = date(today.year, today.month + 1, 1)
-        return (next_month - today).days
+            # Reset is next month
+            ny, nm = (today.year + 1, 1) if today.month == 12 else (today.year, today.month + 1)
+            clamp = min(self._reset_day, calendar.monthrange(ny, nm)[1])
+            next_reset = date(ny, nm, clamp)
+        return (next_reset - today).days
 
     def _load(self) -> None:
         """Load persisted usage data from file."""
@@ -224,6 +243,10 @@ class DataCapTracker:
         self.warn_50 = warn_50
         self.warn_75 = warn_75
         self.warn_90 = warn_90
+
+    def set_reset_day(self, day: int) -> None:
+        """Set the day of month when the cap resets (1–31)."""
+        self._reset_day = max(1, min(31, day))
 
     def reset_month(self) -> None:
         """Reset current month's usage (for manual reset)."""

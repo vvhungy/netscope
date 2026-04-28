@@ -17,6 +17,7 @@ DEFAULT_CONFIG = {
     "data_cap_warn_50": True,
     "data_cap_warn_75": True,
     "data_cap_warn_90": True,
+    "data_cap_reset_day": 1,       # day of month (1–31) when cap resets
 }
 
 # IPTables chain name
