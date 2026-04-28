@@ -352,6 +352,12 @@ class SettingsDialog(QDialog):
         self._data_cap_spin.setDecimals(1)
         data_cap_layout.addRow("Monthly Data Cap:", self._data_cap_spin)
 
+        # Reset day
+        self._reset_day_spin = QSpinBox()
+        self._reset_day_spin.setRange(1, 31)
+        self._reset_day_spin.setSuffix(" of month")
+        data_cap_layout.addRow("Cap Resets On:", self._reset_day_spin)
+
         layout.addWidget(self._data_cap_group)
 
         # Warning thresholds group
@@ -526,6 +532,7 @@ class SettingsDialog(QDialog):
         # Data cap tab
         self._data_cap_enabled_check.setChecked(self._config.get("data_cap_enabled", False))
         self._data_cap_spin.setValue(self._config.get("data_cap_gb", 100.0))
+        self._reset_day_spin.setValue(self._config.get("data_cap_reset_day", 1))
         self._warn_50_check.setChecked(self._config.get("data_cap_warn_50", True))
         self._warn_75_check.setChecked(self._config.get("data_cap_warn_75", True))
         self._warn_90_check.setChecked(self._config.get("data_cap_warn_90", True))
@@ -551,6 +558,7 @@ class SettingsDialog(QDialog):
 
         self._config["data_cap_enabled"] = self._data_cap_enabled_check.isChecked()
         self._config["data_cap_gb"] = self._data_cap_spin.value()
+        self._config["data_cap_reset_day"] = self._reset_day_spin.value()
         self._config["data_cap_warn_50"] = self._warn_50_check.isChecked()
         self._config["data_cap_warn_75"] = self._warn_75_check.isChecked()
         self._config["data_cap_warn_90"] = self._warn_90_check.isChecked()

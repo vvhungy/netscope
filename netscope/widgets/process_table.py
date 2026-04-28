@@ -1,9 +1,11 @@
 """Process connections table widget."""
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
+    QApplication,
     QHeaderView,
     QLabel,
+    QMenu,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -16,6 +18,11 @@ from ..core.theme import get_palette, table_style
 
 class ProcessTable(QWidget):
     """Table showing per-process connection counts."""
+
+    # Signals
+    block_requested = pyqtSignal(int, str)   # pid (0 if unknown), process_name
+    unblock_requested = pyqtSignal(int, str)
+    view_connections_requested = pyqtSignal(str)  # process_name
 
     def __init__(self):
         super().__init__()
@@ -51,7 +58,47 @@ class ProcessTable(QWidget):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSortingEnabled(True)
 
+        # Context menu
+        self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.table.customContextMenuRequested.connect(self._show_context_menu)
+
         layout.addWidget(self.table)
+
+    def _show_context_menu(self, position) -> None:
+        """Show context menu for selected row."""
+        row = self.table.rowAt(position.y())
+        if row < 0:
+            return
+
+        name_item = self.table.item(row, 0)
+        if not name_item:
+            return
+
+        process_name = name_item.data(Qt.ItemDataRole.UserRole)
+
+        menu = QMenu(self)
+
+        copy_action = menu.addAction("Copy Process Name")
+        if copy_action:
+            copy_action.triggered.connect(
+                lambda: self._copy_to_clipboard(process_name)
+            )
+
+        view_action = menu.addAction("View in Connections Tab")
+        if view_action:
+            view_action.triggered.connect(
+                lambda: self.view_connections_requested.emit(process_name)
+            )
+
+        viewport = self.table.viewport()
+        if viewport:
+            menu.exec(viewport.mapToGlobal(position))
+
+    def _copy_to_clipboard(self, text: str) -> None:
+        """Copy text to clipboard."""
+        clipboard = QApplication.clipboard()
+        if clipboard:
+            clipboard.setText(text)
 
     def update_data(self, process_connections: dict[str, list[Connection]]) -> None:
         """Update table with new connection data."""

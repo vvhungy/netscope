@@ -59,6 +59,7 @@ class ProcessBandwidthTable(QWidget):
     # Signals
     block_requested = pyqtSignal(int, str)  # pid, process_name
     unblock_requested = pyqtSignal(int, str)  # pid, process_name
+    view_connections_requested = pyqtSignal(str)  # process_name
 
     def __init__(self, max_rows: int = 20):
         super().__init__()
@@ -152,6 +153,12 @@ class ProcessBandwidthTable(QWidget):
         copy_action = menu.addAction("📋 Copy Process Name")
         if copy_action:
             copy_action.triggered.connect(lambda: self._copy_to_clipboard(process_name))
+
+        view_action = menu.addAction("View in Connections Tab")
+        if view_action:
+            view_action.triggered.connect(
+                lambda: self.view_connections_requested.emit(process_name)
+            )
 
         # Show menu
         viewport = self.table.viewport()

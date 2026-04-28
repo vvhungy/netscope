@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
             warn_50=self.config.get("data_cap_warn_50", True),
             warn_75=self.config.get("data_cap_warn_75", True),
             warn_90=self.config.get("data_cap_warn_90", True),
+            reset_day=self.config.get("data_cap_reset_day", 1),
         )
 
         # Alert rules manager
@@ -198,9 +199,11 @@ class MainWindow(QMainWindow):
         self._traffic_blocker = TrafficBlocker()
         self.process_bandwidth_table.block_requested.connect(self._on_block_process)
         self.process_bandwidth_table.unblock_requested.connect(self._on_unblock_process)
+        self.process_bandwidth_table.view_connections_requested.connect(self._on_view_process_connections)
 
         # Process connections table
         self.process_table = ProcessTable()
+        self.process_table.view_connections_requested.connect(self._on_view_process_connections)
 
         # Listening ports widget
         self.listening_ports = ListeningPortsWidget()
@@ -734,6 +737,12 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Unblock Failed", f"Failed to unblock process:\n{error}")
 
+    def _on_view_process_connections(self, process_name: str) -> None:
+        """Switch to Connections tab and filter by process name."""
+        self._process_tabs.setCurrentWidget(self.process_table)
+        # ProcessTable doesn't have a filter bar, but we highlight via status bar
+        self.statusBar().showMessage(f"Showing connections for: {process_name}", 5000)
+
     def _on_about(self) -> None:
         """Show about dialog."""
         QMessageBox.about(
@@ -807,5 +816,6 @@ class MainWindow(QMainWindow):
                 monthly_cap_gb=config.get("data_cap_gb", 100.0),
                 warn_50=config.get("data_cap_warn_50", True),
                 warn_75=config.get("data_cap_warn_75", True),
-                warn_90=config.get("data_cap_warn_90", True)
+                warn_90=config.get("data_cap_warn_90", True),
+                reset_day=config.get("data_cap_reset_day", 1),
             )
